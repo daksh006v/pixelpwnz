@@ -159,12 +159,12 @@ export default function LandingScreen({ navigation }: Props) {
                 javaScriptEnabled={true}
                 domStorageEnabled={true}
                 source={{
-                  html: `
+                  uri: `data:text/html;charset=utf-8,${encodeURIComponent(`
                     <!DOCTYPE html>
                     <html>
                       <head>
                         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-                        <script type="module" src="https://unpkg.com/@splinetool/viewer/build/spline-viewer.js"></script>
+                        <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.0/build/spline-viewer.js"></script>
                         <style>
                           body, html {
                             margin: 0;
@@ -185,8 +185,7 @@ export default function LandingScreen({ navigation }: Props) {
                         <spline-viewer loading-anim-type="spinner-small-light" url="https://prod.spline.design/twLIj7hBhI8aQwjq/scene.splinecode"></spline-viewer>
                       </body>
                     </html>
-                  `,
-                  baseUrl: 'https://prod.spline.design'
+                  `)}`
                 }}
                 style={{ backgroundColor: 'transparent', width: '100%', height: '100%' }}
                 scrollEnabled={false}
