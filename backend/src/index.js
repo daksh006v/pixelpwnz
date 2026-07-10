@@ -16,6 +16,7 @@ import configRoutes from './routes/config.js';
 import authRoutes from './routes/auth.js';
 import { startCleanup } from './store/sessionStore.js';
 import { cleanupOrphanedCollections } from './brain/chromaClient.js';
+import { initPersonas } from './brain/personas.js';
 import { connectDB } from './db.js';
 
 const app = express();
@@ -73,6 +74,7 @@ if (isMainModule) {
   const server = app.listen(config.port, async () => {
     console.log(`[Signet] Server running on port ${config.port}`);
     await connectDB().catch((err) => console.warn('[MongoDB] Connection warning:', err.message));
+    await initPersonas();
     await cleanupOrphanedCollections();
   });
 
