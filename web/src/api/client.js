@@ -4,7 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 15000,
+  timeout: 60000, // 60 seconds (ingesting vectors can take time)
   headers: {
     'Content-Type': 'application/json',
   },
@@ -136,6 +136,14 @@ export const loginUser = async (email, password) => {
  */
 export const getProfile = async () => {
   const response = await apiClient.get('/auth/me');
+  return response.data;
+};
+
+/**
+ * Get all active sessions for the current user
+ */
+export const getSessions = async () => {
+  const response = await apiClient.get('/sessions');
   return response.data;
 };
 
