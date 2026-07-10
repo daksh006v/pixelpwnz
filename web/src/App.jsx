@@ -16,6 +16,8 @@ import ExplorePage from './pages/ExplorePage';
 import DashboardPage from './pages/DashboardPage';
 import CreateNewPage from './pages/CreateNewPage';
 
+import InteractiveDotGrid from './components/InteractiveDotGrid';
+
 function ScrollHandler() {
   const { pathname, hash } = useLocation();
 
@@ -48,9 +50,7 @@ export default function App() {
       <ScrollHandler />
       <ToastProvider />
       <PrivacyModal />
-      {/* Global Ambient Glassmorphism Background Orbs */}
-      <div className="ambient-orb orb-primary" />
-      <div className="ambient-orb orb-secondary" />
+      <InteractiveDotGrid />
       
       <div style={{ position: 'relative', zIndex: 1 }}>
         <Routes>
