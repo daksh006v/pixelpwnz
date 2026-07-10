@@ -1,33 +1,29 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useNavigate } from 'react-router-dom';
-import { UploadCloud, CheckCircle, AlertCircle, FileText, Loader, Sun, Moon } from 'lucide-react';
+import { UploadCloud, CheckCircle, AlertCircle, FileText, Loader, ArrowLeft } from 'lucide-react';
 import toast from 'react-hot-toast';
 import useChatStore from '../store/chatStore';
-import useUiStore from '../store/uiStore';
 import { uploadChat } from '../api/client';
-import StatsPanel from '../components/StatsPanel';
 
 export default function UploadPage() {
   const navigate = useNavigate();
   const { setSession } = useChatStore();
-  const { theme, toggleTheme } = useUiStore();
 
   const [userName, setUserName] = useState('');
   const [file, setFile] = useState(null);
   const [uploadState, setUploadState] = useState('idle'); // idle | uploading | success | error
   const [progress, setProgress] = useState(0);
   const [errorMsg, setErrorMsg] = useState('');
-  const [uploadResult, setUploadResult] = useState(null);
 
-  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
-    if (rejectedFiles.length > 0) {
+  const onDrop = useCallback((accepted, rejected) => {
+    if (rejected.length > 0) {
       setErrorMsg('Only .txt files are accepted.');
       setUploadState('error');
       return;
     }
-    if (acceptedFiles.length > 0) {
-      setFile(acceptedFiles[0]);
+    if (accepted.length > 0) {
+      setFile(accepted[0]);
       setUploadState('idle');
       setErrorMsg('');
     }
@@ -37,19 +33,13 @@ export default function UploadPage() {
     onDrop,
     accept: { 'text/plain': ['.txt'] },
     maxFiles: 1,
-    maxSize: 50 * 1024 * 1024, // 50MB
+    maxSize: 50 * 1024 * 1024,
     disabled: uploadState === 'uploading',
   });
 
   const handleUpload = async () => {
-    if (!file) {
-      toast.error('Please select a .txt file first.');
-      return;
-    }
-    if (!userName.trim()) {
-      toast.error('Please enter your name as it appears in the chat.');
-      return;
-    }
+    if (!file) { toast.error('Select a .txt file first.'); return; }
+    if (!userName.trim()) { toast.error('Enter your name as it appears in the chat.'); return; }
 
     setUploadState('uploading');
     setProgress(0);
@@ -58,275 +48,258 @@ export default function UploadPage() {
     try {
       const result = await uploadChat(file, userName.trim(), (p) => setProgress(p));
       setUploadState('success');
-      setUploadResult(result);
-      setSession(
-        result.session_id,
-        userName.trim(),
-        result.contact_name,
-        result.total_pairs_extracted
-      );
-      toast.success(`Successfully parsed ${result.total_pairs_extracted} conversation pairs!`);
-
-      // Navigate to chat after a short delay
-      setTimeout(() => navigate('/chat'), 1800);
+      setSession(result.session_id, userName.trim(), result.contact_name, result.total_pairs_extracted);
+      toast.success(`Parsed ${result.total_pairs_extracted} conversation pairs!`);
+      setTimeout(() => navigate('/chat'), 1500);
     } catch (error) {
       setUploadState('error');
-      const msg =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        'Upload failed. Please check the file and try again.';
+      const msg = error.response?.data?.message || error.response?.data?.error || 'Upload failed. Check the file and try again.';
       setErrorMsg(msg);
       toast.error(msg);
     }
   };
 
-  const getDropzoneClass = () => {
-    let cls = 'dropzone';
-    if (isDragActive) cls += ' dropzone--active';
-    if (uploadState === 'uploading') cls += ' dropzone--uploading';
-    if (uploadState === 'success') cls += ' dropzone--success';
-    if (uploadState === 'error') cls += ' dropzone--error';
-    return cls;
-  };
+  const dropzoneClass = `dropzone-clean${isDragActive ? ' active' : ''}${uploadState === 'success' ? ' success' : ''}${uploadState === 'error' ? ' error' : ''}`;
 
   return (
-    <div className="page-enter" style={{ minHeight: '100vh', position: 'relative', overflow: 'hidden' }}>
-      {/* AI Glow Orbs */}
-      <div className="ai-glow" style={{ top: -100, right: -100 }} />
-      <div className="ai-glow ai-glow--secondary" style={{ bottom: -80, left: -80 }} />
+    <div className="page-enter" style={{ 
+      minHeight: '100vh', 
+      background: '#F8F8FC', // Very light lavender/gray
+      position: 'relative',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '40px'
+    }}>
 
-      {/* Theme Toggle */}
-      <button
-        className="btn-icon"
-        onClick={toggleTheme}
-        title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-        style={{
-          position: 'fixed',
-          top: 20,
-          right: 20,
-          zIndex: 50,
-        }}
-        id="theme-toggle"
-      >
-        {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-      </button>
-
-      {/* Main Content */}
-      <div
-        style={{
-          maxWidth: 1200,
-          margin: '0 auto',
-          padding: '64px 24px',
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 64,
-          alignItems: 'center',
-          minHeight: '100vh',
-          position: 'relative',
-          zIndex: 1,
-        }}
-        className="upload-grid"
-      >
-        {/* Left – Hero Text */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-          <div>
-            <h1
-              className="text-h1"
-              style={{
-                marginBottom: 8,
-                color: 'var(--color-text)',
-              }}
-            >
-              Signet
-            </h1>
-            <p
-              className="gradient-text"
-              style={{
-                fontSize: '1.25rem',
-                fontWeight: 600,
-                lineHeight: 1.4,
-              }}
-            >
-              Your digital twin. Write like you.
-            </p>
-          </div>
-
-          <p className="text-body-lg" style={{ color: 'var(--color-text-secondary)', maxWidth: 440 }}>
-            Upload your WhatsApp chat export and let Signet learn your writing style. 
-            It'll reply to messages exactly like you would — same tone, same vibe, same you.
-          </p>
-
-          {/* How to export */}
-          <div
-            className="card"
-            style={{
-              padding: 20,
-              cursor: 'default',
+      <div style={{
+        maxWidth: 1200, 
+        width: '100%',
+        display: 'grid', 
+        gridTemplateColumns: '45% 55%',
+        gap: 80, 
+        alignItems: 'start',
+      }}>
+        {/* ── Left Side: Instructions ── */}
+        <div>
+          <button 
+            onClick={() => navigate('/')} 
+            style={{ 
+              background: 'none', border: 'none', color: '#888B9E', 
+              cursor: 'pointer', marginBottom: 24, display: 'flex', alignItems: 'center'
             }}
           >
-            <h3 className="text-small" style={{ color: 'var(--color-text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 12 }}>
-              How to export your WhatsApp chat
+            <ArrowLeft size={24} strokeWidth={2} />
+          </button>
+
+          <h1 style={{ 
+            fontSize: '3.5rem', 
+            lineHeight: 1.1,
+            fontWeight: 800,
+            color: '#12121A',
+            marginBottom: 16,
+            letterSpacing: '-0.02em'
+          }}>
+            Upload Your<br />
+            <span style={{ 
+              background: 'linear-gradient(90deg, #6C5CE7, #8B7CF7)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>Chat History</span>
+          </h1>
+          
+          <p style={{ 
+            fontSize: '1.125rem', 
+            color: '#6B6F8A', 
+            lineHeight: 1.6, 
+            marginBottom: 40,
+            maxWidth: 400
+          }}>
+            Export your WhatsApp chat as a{' '}
+            <span style={{
+              background: '#EDEEFF', 
+              color: '#6C5CE7',
+              padding: '4px 8px', 
+              borderRadius: 6, 
+              fontWeight: 600,
+              fontSize: '0.9375rem'
+            }}>.txt</span> file and upload it here.
+          </p>
+
+          {/* How to export card */}
+          <div style={{
+            background: '#FFFFFF',
+            borderRadius: 24,
+            padding: '40px',
+            boxShadow: '0 8px 30px rgba(108, 92, 231, 0.04)',
+            border: '1px solid rgba(230, 230, 240, 0.8)'
+          }}>
+            <h3 style={{
+              fontSize: '0.8125rem', 
+              fontWeight: 700, 
+              textTransform: 'uppercase',
+              letterSpacing: '0.08em', 
+              color: '#9BA3BA', 
+              marginBottom: 32,
+            }}>
+              How to export from WhatsApp
             </h3>
-            <ol
-              className="text-body"
-              style={{
-                color: 'var(--color-text-secondary)',
-                paddingLeft: 20,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 6,
-              }}
-            >
-              <li>Open a chat in WhatsApp</li>
-              <li>Tap <strong style={{ color: 'var(--color-text)' }}>⋮ → More → Export Chat</strong></li>
-              <li>Choose <strong style={{ color: 'var(--color-text)' }}>"Without Media"</strong></li>
-              <li>Save the <code className="text-code" style={{ color: 'var(--color-primary)', background: 'var(--color-surface-elevated)', padding: '2px 6px', borderRadius: 4 }}>.txt</code> file</li>
-            </ol>
+            <ul style={{ 
+              listStyle: 'none', 
+              padding: 0, 
+              margin: 0,
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: 20, 
+              fontSize: '1.0625rem', 
+              color: '#6B728E' 
+            }}>
+              <li>
+                Open a chat in WhatsApp
+              </li>
+              <li>
+                Tap <strong style={{ color: '#000000', fontWeight: 600 }}>⋮ → More → Export Chat</strong>
+              </li>
+              <li>
+                Choose <strong style={{ color: '#000000', fontWeight: 600 }}>"Without Media"</strong>
+              </li>
+              <li>
+                Save the <strong style={{ color: '#6C5CE7', fontWeight: 600 }}>.txt</strong> file
+              </li>
+            </ul>
           </div>
         </div>
 
-        {/* Right – Upload Zone */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          {/* User Name Input */}
-          <div>
-            <label
-              className="text-small"
-              htmlFor="user-name"
-              style={{ color: 'var(--color-text-secondary)', marginBottom: 8, display: 'block' }}
-            >
+        {/* ── Right Side: Upload Form ── */}
+        <div style={{ paddingTop: 60 }}>
+          <div style={{ marginBottom: 24 }}>
+            <label style={{ 
+              fontSize: '0.9375rem', 
+              fontWeight: 700, 
+              color: '#3D3E52', 
+              marginBottom: 10, 
+              display: 'block' 
+            }}>
               Your name as it appears in the chat
             </label>
             <input
-              id="user-name"
-              type="text"
-              className="input-field"
+              id="user-name" 
+              type="text" 
+              style={{
+                width: '100%',
+                padding: '16px 20px',
+                background: '#FFFFFF',
+                border: 'none',
+                borderRadius: 12,
+                fontSize: '1rem',
+                color: '#12121A',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.02)',
+                outline: 'none'
+              }}
               placeholder="e.g., Ronit"
-              value={userName}
+              value={userName} 
               onChange={(e) => setUserName(e.target.value)}
               disabled={uploadState === 'uploading' || uploadState === 'success'}
             />
           </div>
 
           {/* Dropzone */}
-          <div
-            {...getRootProps()}
-            className={getDropzoneClass()}
-            id="upload-dropzone"
-          >
+          <div {...getRootProps()} className={dropzoneClass} style={{
+            background: '#FFFFFF',
+            border: '2px dashed #E5E5F0',
+            borderRadius: 20,
+            padding: '60px 40px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            textAlign: 'center',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+            minHeight: 280
+          }}>
             <input {...getInputProps()} />
-
+            
             {uploadState === 'success' ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                <CheckCircle size={48} color="var(--color-success)" />
-                <p className="text-h3" style={{ color: 'var(--color-success)' }}>
-                  Upload Complete!
-                </p>
-                <p className="text-body" style={{ color: 'var(--color-text-secondary)' }}>
-                  Redirecting to chat...
-                </p>
-              </div>
+              <>
+                <CheckCircle size={56} color="#10B981" style={{ marginBottom: 16 }} />
+                <h3 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#10B981', marginBottom: 8 }}>Upload Complete!</h3>
+                <p style={{ color: '#6B6F8A' }}>Redirecting to chat...</p>
+              </>
             ) : uploadState === 'uploading' ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
-                <Loader size={40} color="var(--color-primary)" className="animate-spin" />
-                <p className="text-body" style={{ color: 'var(--color-text-secondary)' }}>
-                  {progress < 100 ? 'Uploading file...' : 'Parsing & building embeddings...'}
-                </p>
-                <div className="progress-bar" style={{ maxWidth: 300 }}>
-                  <div
-                    className="progress-bar__fill"
-                    style={{ width: `${progress}%` }}
-                  />
+              <>
+                <Loader size={48} color="#6C5CE7" className="animate-spin" style={{ marginBottom: 16 }} />
+                <p style={{ color: '#6B6F8A', marginBottom: 16 }}>{progress < 100 ? 'Uploading...' : 'Building clone...'}</p>
+                <div style={{ width: '100%', height: 6, background: '#F0F0F5', borderRadius: 3, overflow: 'hidden', maxWidth: 200 }}>
+                  <div style={{ width: `${progress}%`, height: '100%', background: '#6C5CE7', transition: 'width 0.3s ease' }} />
                 </div>
-                <p className="text-small" style={{ color: 'var(--color-text-muted)' }}>
-                  {progress}%
-                </p>
-              </div>
+              </>
             ) : uploadState === 'error' ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                <AlertCircle size={48} color="var(--color-error)" />
-                <p className="text-h3" style={{ color: 'var(--color-error)' }}>
-                  Upload Failed
-                </p>
-                <p className="text-body" style={{ color: 'var(--color-text-secondary)', maxWidth: 300 }}>
-                  {errorMsg}
-                </p>
-                <p className="text-small" style={{ color: 'var(--color-text-muted)' }}>
-                  Click or drag to try again
-                </p>
-              </div>
+              <>
+                <AlertCircle size={56} color="#EF4444" style={{ marginBottom: 16 }} />
+                <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#EF4444', marginBottom: 8 }}>Upload Failed</h3>
+                <p style={{ color: '#6B6F8A', maxWidth: 280 }}>{errorMsg}</p>
+              </>
             ) : file ? (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                <FileText size={40} color="var(--color-primary)" />
-                <p className="text-h3" style={{ color: 'var(--color-text)' }}>
-                  {file.name}
-                </p>
-                <p className="text-small" style={{ color: 'var(--color-text-secondary)' }}>
-                  {(file.size / 1024).toFixed(1)} KB — Click upload to continue
-                </p>
-              </div>
+              <>
+                <FileText size={56} color="#6C5CE7" style={{ marginBottom: 16 }} />
+                <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#12121A', marginBottom: 4 }}>{file.name}</h3>
+                <p style={{ color: '#6B6F8A' }}>{(file.size / 1024).toFixed(1)} KB</p>
+              </>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12 }}>
-                <UploadCloud
-                  size={48}
-                  color={isDragActive ? 'var(--color-primary)' : 'var(--color-text-muted)'}
-                  className="animate-pulse-soft"
-                />
-                <p className="text-h3" style={{ color: 'var(--color-text)' }}>
-                  {isDragActive ? 'Drop your file here' : 'Drag & drop your WhatsApp .txt here'}
-                </p>
-                <p className="text-small" style={{ color: 'var(--color-text-muted)' }}>
+              <>
+                <UploadCloud size={64} color="#888B9E" strokeWidth={1.5} style={{ marginBottom: 20 }} />
+                <h3 style={{ fontSize: '1.125rem', fontWeight: 700, color: '#12121A', marginBottom: 8 }}>
+                  Drag & drop your WhatsApp .txt
+                </h3>
+                <p style={{ fontSize: '0.9375rem', color: '#9B9FB5' }}>
                   or click to browse • Max 50MB
                 </p>
-              </div>
+              </>
             )}
           </div>
 
-          {/* Upload Button */}
           {file && uploadState !== 'success' && uploadState !== 'uploading' && (
-            <button
-              className="btn btn-primary"
-              onClick={handleUpload}
-              disabled={!userName.trim()}
-              style={{ width: '100%' }}
-              id="upload-btn"
+            <button 
+              onClick={handleUpload} 
+              disabled={!userName.trim()} 
+              style={{
+                width: '100%',
+                padding: '16px',
+                background: '#6C5CE7',
+                color: 'white',
+                border: 'none',
+                borderRadius: 14,
+                fontSize: '1rem',
+                fontWeight: 600,
+                marginTop: 24,
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: 8,
+                boxShadow: '0 8px 24px rgba(108, 92, 231, 0.3)'
+              }}
             >
-              <UploadCloud size={18} />
-              Upload & Build Clone
+              <UploadCloud size={20} /> Upload & Build Clone
             </button>
-          )}
-
-          {/* Success Stats */}
-          {uploadState === 'success' && uploadResult && (
-            <StatsPanel
-              totalPairs={uploadResult.total_pairs_extracted}
-              contactName={uploadResult.contact_name}
-            />
           )}
         </div>
       </div>
 
-      {/* Footer */}
-      <div
-        style={{
-          textAlign: 'center',
-          padding: '24px',
-          position: 'relative',
-          zIndex: 1,
-        }}
-      >
-        <p className="text-small" style={{ color: 'var(--color-text-muted)', maxWidth: 600, margin: '0 auto' }}>
-          Your data is processed in real-time and never stored. Signet respects your privacy. 
-          By using this service, you agree to our privacy and ethics guidelines.
-        </p>
-      </div>
-
-      {/* Responsive Styles */}
       <style>{`
-        @media (max-width: 768px) {
-          .upload-grid {
+        .dropzone-clean:hover { border-color: #6C5CE7 !important; background: rgba(108, 92, 231, 0.02) !important; }
+        .dropzone-clean.active { border-color: #6C5CE7 !important; background: rgba(108, 92, 231, 0.04) !important; }
+        .dropzone-clean.success { border-color: #10B981 !important; border-style: solid !important; }
+        .dropzone-clean.error { border-color: #EF4444 !important; border-style: solid !important; }
+        
+        @media (max-width: 900px) {
+          div[style*="grid-template-columns"] {
             grid-template-columns: 1fr !important;
-            gap: 32px !important;
-            padding: 32px 16px !important;
+            gap: 40px !important;
+          }
+          div[style*="paddingTop: 60"] {
+            padding-top: 0 !important;
           }
         }
       `}</style>
