@@ -49,60 +49,7 @@ export default function LandingScreen({ navigation }: Props) {
           end={{ x: 0.5, y: 1 }}
         />
 
-        {/* Hero Text */}
-        <View style={styles.heroTextContainer}>
-          <View style={styles.tag}>
-            <Text style={styles.tagIcon}>✦</Text>
-            <Text style={styles.tagText}>Your Conversations, Your AI</Text>
-          </View>
-
-          <Text style={styles.title}>Meet Your</Text>
-          
-          <MaskedView
-            style={{ height: 60, width: '100%', alignItems: 'center' }}
-            maskElement={<Text style={styles.titleMask}>AI Clone</Text>}
-          >
-            <LinearGradient
-              colors={['#5F5AFF', '#9155FF']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={StyleSheet.absoluteFill}
-            />
-          </MaskedView>
-
-          <Text style={styles.subtitle}>
-            Signet creates a personalized AI clone from your chat history — built to reflect the way they truly talk.
-          </Text>
-
-          {/* CTA Buttons */}
-          <View style={styles.ctaRow}>
-            <TouchableOpacity
-              style={styles.btnPrimary}
-              activeOpacity={0.8}
-              onPress={() => navigation.navigate('Upload')}
-            >
-              <Feather name="upload" size={18} color="#FFF" />
-              <Text style={styles.btnPrimaryText}>Upload Your Chat</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.btnGhost}
-              activeOpacity={0.8}
-            >
-              <Feather name="play" size={16} color={Colors.primarySolid} />
-              <Text style={styles.btnGhostText}>Watch Demo</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.privacyNote}>
-            <Feather name="shield" size={18} color={Colors.primarySolid} style={{ marginTop: 2 }} />
-            <Text style={styles.privacyNoteText}>
-              Your data stays private and secure.{'\n'}We never store your conversations.
-            </Text>
-          </View>
-        </View>
-
-        {/* 3D Orb Section */}
+        {/* 3D Orb Section (Moved above text) */}
         <View style={styles.orbContainer}>
           {/* Concentric Platforms */}
           <View style={styles.platform1} />
@@ -153,6 +100,59 @@ export default function LandingScreen({ navigation }: Props) {
                 <Text style={styles.glassCardDesc}>Analyzes tone,{'\n'}pattern & style</Text>
               </View>
             </BlurView>
+          </View>
+        </View>
+
+        {/* Hero Text */}
+        <View style={styles.heroTextContainer}>
+          <View style={styles.tag}>
+            <Text style={styles.tagIcon}>✦</Text>
+            <Text style={styles.tagText}>Your Conversations, Your AI</Text>
+          </View>
+
+          <Text style={styles.title}>Meet Your</Text>
+          
+          <MaskedView
+            style={{ height: 60, width: '100%', alignItems: 'center' }}
+            maskElement={<Text style={styles.titleMask}>AI Clone</Text>}
+          >
+            <LinearGradient
+              colors={['#5F5AFF', '#9155FF']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+          </MaskedView>
+
+          <Text style={styles.subtitle}>
+            Signet creates a personalized AI clone from your chat history — built to reflect the way they truly talk.
+          </Text>
+
+          {/* CTA Buttons */}
+          <View style={styles.ctaRow}>
+            <TouchableOpacity
+              style={styles.btnPrimary}
+              activeOpacity={0.8}
+              onPress={() => navigation.navigate('Upload')}
+            >
+              <Feather name="upload" size={18} color="#FFF" />
+              <Text style={styles.btnPrimaryText}>Upload Your Chat</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.btnGhost}
+              activeOpacity={0.8}
+            >
+              <Feather name="play" size={16} color={Colors.primarySolid} />
+              <Text style={styles.btnGhostText}>Watch Demo</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.privacyNote}>
+            <Feather name="shield" size={18} color={Colors.primarySolid} style={{ marginTop: 2 }} />
+            <Text style={styles.privacyNoteText}>
+              Your data stays private and secure.{'\n'}We never store your conversations.
+            </Text>
           </View>
         </View>
 
