@@ -25,12 +25,7 @@ export default {
     web: {
       favicon: './assets/favicon.png',
     },
-    // NOTE: plugins are removed for Expo Go compatibility.
+    // NOTE: plugins and eas config are removed for Expo Go compatibility.
     // Add them back when switching to a development build (EAS).
-    extra: {
-      eas: {
-        projectId: 'YOUR_EAS_PROJECT_ID',
-      },
-    },
   },
 };
