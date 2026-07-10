@@ -1,11 +1,14 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, ScrollView, Animated, TouchableOpacity, SafeAreaView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Animated, TouchableOpacity, SafeAreaView, Dimensions } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Feather } from '@expo/vector-icons';
+import MaskedView from '@react-native-masked-view/masked-view';
 import { Colors, Spacing, Typography, Radii, Gradients } from '../constants/theme';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/AppNavigator';
+
+const { width } = Dimensions.get('window');
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Landing'>;
 
@@ -38,8 +41,13 @@ export default function LandingScreen({ navigation }: Props) {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         
-        {/* Background Grid Illusion (simplified for mobile) */}
-        <View style={styles.bgGrid} />
+        {/* Soft Radial Glow Background Illusion using LinearGradient */}
+        <LinearGradient
+          colors={['rgba(108, 92, 231, 0.08)', 'transparent']}
+          style={styles.bgGlow}
+          start={{ x: 0.5, y: 0 }}
+          end={{ x: 0.5, y: 1 }}
+        />
 
         {/* Hero Text */}
         <View style={styles.heroTextContainer}>
@@ -48,16 +56,19 @@ export default function LandingScreen({ navigation }: Props) {
             <Text style={styles.tagText}>Your Conversations, Your AI</Text>
           </View>
 
-          <Text style={[styles.title, { color: Colors.text }]}>Meet Your</Text>
+          <Text style={styles.title}>Meet Your</Text>
           
-          <LinearGradient
-            colors={[...Gradients.primary]}
-            start={Gradients.primaryStart}
-            end={Gradients.primaryEnd}
-            style={styles.gradientMaskContainer}
+          <MaskedView
+            style={{ height: 60, width: '100%', alignItems: 'center' }}
+            maskElement={<Text style={styles.titleMask}>AI Clone</Text>}
           >
-            <Text style={[styles.title, styles.gradientText]}>AI Clone</Text>
-          </LinearGradient>
+            <LinearGradient
+              colors={['#5F5AFF', '#9155FF']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+          </MaskedView>
 
           <Text style={styles.subtitle}>
             Signet creates a personalized AI clone from your chat history — built to reflect the way they truly talk.
@@ -94,66 +105,91 @@ export default function LandingScreen({ navigation }: Props) {
         {/* 3D Orb Section */}
         <View style={styles.orbContainer}>
           {/* Concentric Platforms */}
-          <View style={styles.platform1}>
-            <BlurView intensity={20} tint="light" style={StyleSheet.absoluteFill} />
-          </View>
+          <View style={styles.platform1} />
           <View style={styles.platform2} />
           <View style={styles.platform3} />
 
           {/* Animated Orb */}
-          <Animated.View style={[styles.orb, { transform: [{ translateY }] }]}>
-            {/* Specular Highlight */}
-            <View style={styles.orbHighlight} />
-            {/* Eyes */}
-            <View style={styles.orbEyes}>
-              <View style={styles.orbEye} />
-              <View style={styles.orbEye} />
-            </View>
+          <Animated.View style={[styles.orbWrapper, { transform: [{ translateY }] }]}>
+            <LinearGradient
+              colors={['#C5B8FF', '#7560F0', '#2E1A9E']}
+              start={{ x: 0.2, y: 0.1 }}
+              end={{ x: 0.9, y: 0.9 }}
+              style={styles.orb}
+            >
+              {/* Specular Highlight */}
+              <LinearGradient
+                colors={['rgba(255, 255, 255, 0.7)', 'transparent']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.orbHighlight}
+              />
+              {/* Eyes */}
+              <View style={styles.orbEyes}>
+                <View style={styles.orbEye} />
+                <View style={styles.orbEye} />
+              </View>
+            </LinearGradient>
           </Animated.View>
 
           {/* Glass Cards (Positioned around Orb) */}
-          <BlurView intensity={Colors.glass.intensity} tint={Colors.glass.tint} style={[styles.glassCard, { top: 20, left: -10 }]}>
-            <View style={styles.glassCardIcon}><Feather name="message-circle" size={16} color={Colors.primarySolid} /></View>
-            <View>
-              <Text style={styles.glassCardTitle}>Your Chat</Text>
-              <Text style={styles.glassCardDesc}>Upload your{'\n'}conversations</Text>
-            </View>
-          </BlurView>
+          <View style={[styles.glassCardWrapper, { top: 20, left: 10 }]}>
+            <BlurView intensity={40} tint="light" style={styles.glassCard}>
+              <View style={styles.glassCardBg} />
+              <View style={styles.glassCardIcon}><Feather name="message-circle" size={16} color={Colors.primarySolid} /></View>
+              <View>
+                <Text style={styles.glassCardTitle}>Your Chat</Text>
+                <Text style={styles.glassCardDesc}>Upload your{'\n'}conversations</Text>
+              </View>
+            </BlurView>
+          </View>
 
-          <BlurView intensity={Colors.glass.intensity} tint={Colors.glass.tint} style={[styles.glassCard, { bottom: 60, right: -10 }]}>
-            <View style={styles.glassCardIcon}><Feather name="cpu" size={16} color={Colors.primarySolid} /></View>
-            <View>
-              <Text style={styles.glassCardTitle}>Smart AI</Text>
-              <Text style={styles.glassCardDesc}>Analyzes tone,{'\n'}pattern & style</Text>
-            </View>
-          </BlurView>
+          <View style={[styles.glassCardWrapper, { bottom: 60, right: 10 }]}>
+            <BlurView intensity={40} tint="light" style={styles.glassCard}>
+              <View style={styles.glassCardBg} />
+              <View style={styles.glassCardIcon}><Feather name="cpu" size={16} color={Colors.primarySolid} /></View>
+              <View>
+                <Text style={styles.glassCardTitle}>Smart AI</Text>
+                <Text style={styles.glassCardDesc}>Analyzes tone,{'\n'}pattern & style</Text>
+              </View>
+            </BlurView>
+          </View>
         </View>
 
         {/* Feature Badges */}
         <View style={styles.badgeSection}>
-          <BlurView intensity={Colors.glass.intensity} tint={Colors.glass.tint} style={styles.glassBadge}>
-            <View style={styles.glassBadgeIcon}><Feather name="shield" size={20} color={Colors.primarySolid} /></View>
-            <View>
-              <Text style={styles.glassBadgeTitle}>100% Private</Text>
-              <Text style={styles.glassBadgeDesc}>Your chats stay on your device.</Text>
-            </View>
-          </BlurView>
+          <View style={styles.glassBadgeWrapper}>
+            <BlurView intensity={40} tint="light" style={styles.glassBadge}>
+              <View style={styles.glassCardBg} />
+              <View style={styles.glassBadgeIcon}><Feather name="shield" size={20} color={Colors.primarySolid} /></View>
+              <View>
+                <Text style={styles.glassBadgeTitle}>100% Private</Text>
+                <Text style={styles.glassBadgeDesc}>Your chats stay on your device.</Text>
+              </View>
+            </BlurView>
+          </View>
 
-          <BlurView intensity={Colors.glass.intensity} tint={Colors.glass.tint} style={styles.glassBadge}>
-            <View style={styles.glassBadgeIcon}><Feather name="user-check" size={20} color={Colors.primarySolid} /></View>
-            <View>
-              <Text style={styles.glassBadgeTitle}>AI Clone</Text>
-              <Text style={styles.glassBadgeDesc}>AI that talks like your person.</Text>
-            </View>
-          </BlurView>
+          <View style={styles.glassBadgeWrapper}>
+            <BlurView intensity={40} tint="light" style={styles.glassBadge}>
+              <View style={styles.glassCardBg} />
+              <View style={styles.glassBadgeIcon}><Feather name="user-check" size={20} color={Colors.primarySolid} /></View>
+              <View>
+                <Text style={styles.glassBadgeTitle}>AI Clone</Text>
+                <Text style={styles.glassBadgeDesc}>AI that talks like your person.</Text>
+              </View>
+            </BlurView>
+          </View>
 
-          <BlurView intensity={Colors.glass.intensity} tint={Colors.glass.tint} style={styles.glassBadge}>
-            <View style={styles.glassBadgeIcon}><Feather name="lock" size={20} color={Colors.primarySolid} /></View>
-            <View>
-              <Text style={styles.glassBadgeTitle}>Secure & Safe</Text>
-              <Text style={styles.glassBadgeDesc}>We never store your data.</Text>
-            </View>
-          </BlurView>
+          <View style={styles.glassBadgeWrapper}>
+            <BlurView intensity={40} tint="light" style={styles.glassBadge}>
+              <View style={styles.glassCardBg} />
+              <View style={styles.glassBadgeIcon}><Feather name="lock" size={20} color={Colors.primarySolid} /></View>
+              <View>
+                <Text style={styles.glassBadgeTitle}>Secure & Safe</Text>
+                <Text style={styles.glassBadgeDesc}>We never store your data.</Text>
+              </View>
+            </BlurView>
+          </View>
         </View>
 
       </ScrollView>
@@ -164,7 +200,7 @@ export default function LandingScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: Colors.bg,
+    backgroundColor: '#FDFDFD', // Much lighter, closer to web F5F4FA
   },
   container: {
     flexGrow: 1,
@@ -172,22 +208,19 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing['5xl'],
     alignItems: 'center',
   },
-  bgGrid: {
+  bgGlow: {
     position: 'absolute',
-    bottom: 0,
+    top: 0,
     left: 0,
     right: 0,
-    height: 400,
-    opacity: 0.5,
-    // Add simple gradient fallback for the complex CSS bg-grid
-    backgroundColor: Colors.bgLavender,
+    height: 600,
     zIndex: -1,
   },
   heroTextContainer: {
     paddingHorizontal: Spacing.xl,
     alignItems: 'center',
     width: '100%',
-    marginBottom: Spacing['2xl'],
+    marginBottom: Spacing.xl,
     zIndex: 10,
   },
   tag: {
@@ -212,21 +245,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   title: {
-    ...Typography.h1,
+    fontSize: 46,
+    lineHeight: 52,
+    fontWeight: '800',
+    letterSpacing: -1,
+    color: Colors.text,
     textAlign: 'center',
   },
-  gradientMaskContainer: {
-    // To achieve gradient text on React Native, we can use a mask, but for simplicity here we mask a text component if using mask libraries.
-    // Alternatively, just give it a nice color if masked view is not available, or wrap in mask.
-    // Since we don't have react-native-masked-view, we'll give it the primary color for now,
-    // but structure it to be easy to swap.
-    marginTop: -4,
-  },
-  gradientText: {
-    color: Colors.primarySolid, // Fallback since actual gradient text requires @react-native-masked-view
-    textShadowColor: 'rgba(108, 92, 231, 0.2)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 8,
+  titleMask: {
+    fontSize: 46,
+    lineHeight: 52,
+    fontWeight: '800',
+    letterSpacing: -1,
+    textAlign: 'center',
+    color: '#000',
   },
   subtitle: {
     ...Typography.bodyLarge,
@@ -249,13 +281,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.primarySolid,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: Radii.md,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 14,
     shadowColor: Colors.primarySolid,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.35,
+    shadowRadius: 14,
     elevation: 4,
     gap: 8,
   },
@@ -268,12 +300,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.surface,
-    paddingVertical: 14,
-    paddingHorizontal: 20,
-    borderRadius: Radii.md,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    backgroundColor: 'transparent',
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    borderRadius: 14,
     gap: 8,
   },
   btnGhostText: {
@@ -295,25 +325,25 @@ const styles = StyleSheet.create({
   },
   orbContainer: {
     position: 'relative',
-    height: 380,
+    height: 420,
     width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: Spacing['2xl'],
+    marginBottom: Spacing['xl'],
     zIndex: 5,
   },
-  orb: {
-    width: 200,
-    height: 200,
-    borderRadius: 100,
-    backgroundColor: '#7560F0', // Fallback
+  orbWrapper: {
     zIndex: 10,
-    // Emulate radial gradient with box shadow in RN
     shadowColor: Colors.primarySolid,
-    shadowOffset: { width: 0, height: 20 },
+    shadowOffset: { width: 0, height: 25 },
     shadowOpacity: 0.45,
     shadowRadius: 40,
-    elevation: 10,
+    elevation: 15,
+  },
+  orb: {
+    width: 240,
+    height: 240,
+    borderRadius: 120,
     overflow: 'hidden',
   },
   orbHighlight: {
@@ -321,18 +351,17 @@ const styles = StyleSheet.create({
     top: '8%',
     left: '14%',
     width: '50%',
-    height: '38%',
-    borderRadius: 50,
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    height: '45%',
+    borderRadius: 60,
     transform: [{ rotate: '-25deg' }],
   },
   orbEyes: {
     position: 'absolute',
     top: '44%',
     left: '50%',
-    transform: [{ translateX: -30 }], // Half of total width (22+22+16 spacing = 60)
+    transform: [{ translateX: -24 }], // 11 + 11 + 26 spacing = 48 / 2 = 24
     flexDirection: 'row',
-    gap: 16,
+    gap: 26,
     zIndex: 20,
   },
   orbEye: {
@@ -342,94 +371,118 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.95)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.18,
+    shadowRadius: 5,
+    elevation: 4,
   },
   platform1: {
     position: 'absolute',
     bottom: 40,
-    width: 280,
-    height: 60,
-    borderRadius: 140, // Needs to be oval, RN handles huge borderRadius as oval if height is smaller
-    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    width: 320,
+    height: 320,
+    borderRadius: 160,
+    backgroundColor: 'rgba(255, 255, 255, 0.6)',
     borderColor: 'rgba(255, 255, 255, 0.85)',
     borderWidth: 1,
+    transform: [{ scaleY: 0.2 }],
     zIndex: 4,
-    overflow: 'hidden',
   },
   platform2: {
     position: 'absolute',
     bottom: 50,
-    width: 220,
-    height: 45,
-    borderRadius: 110,
+    width: 250,
+    height: 250,
+    borderRadius: 125,
     backgroundColor: 'rgba(248, 247, 255, 0.8)',
     borderColor: 'rgba(237, 237, 245, 0.9)',
     borderWidth: 1,
+    transform: [{ scaleY: 0.2 }],
     zIndex: 5,
   },
   platform3: {
     position: 'absolute',
     bottom: 55,
-    width: 160,
-    height: 32,
-    borderRadius: 80,
+    width: 190,
+    height: 190,
+    borderRadius: 95,
     backgroundColor: 'rgba(108, 92, 231, 0.08)',
+    transform: [{ scaleY: 0.2 }],
     zIndex: 6,
   },
-  glassCard: {
+  glassCardWrapper: {
     position: 'absolute',
-    backgroundColor: Colors.glass.bg,
-    borderColor: Colors.glass.border,
-    borderWidth: 1,
+    zIndex: 20,
     borderRadius: Radii.card,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    overflow: 'hidden',
+    shadowColor: Colors.primarySolid,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.07,
+    shadowRadius: 24,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
+  },
+  glassCard: {
+    paddingVertical: 14,
+    paddingHorizontal: 18,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    zIndex: 20,
-    overflow: 'hidden',
+    gap: 14,
+  },
+  glassCardBg: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: Colors.glass.bg,
   },
   glassCardIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 10,
+    width: 44,
+    height: 44,
+    borderRadius: 11,
     backgroundColor: 'rgba(108, 92, 231, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   glassCardTitle: {
     fontWeight: '700',
-    fontSize: 13,
+    fontSize: 14,
     color: Colors.text,
+    marginBottom: 2,
   },
   glassCardDesc: {
-    fontSize: 11,
+    fontSize: 12,
     color: Colors.textSecondary,
-    lineHeight: 14,
+    lineHeight: 16,
   },
   badgeSection: {
     width: '100%',
     paddingHorizontal: Spacing.xl,
     gap: Spacing.base,
+    backgroundColor: Colors.bgLavender,
+    borderRadius: 24,
+    paddingVertical: 28,
+    marginHorizontal: Spacing.xl,
+    width: width - (Spacing.xl * 2), // constrain width to screen minus padding
+  },
+  glassBadgeWrapper: {
+    borderRadius: 20,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: Colors.glass.border,
+    shadowColor: Colors.primarySolid,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.07,
+    shadowRadius: 24,
+    elevation: 3,
   },
   glassBadge: {
-    backgroundColor: Colors.glass.bg,
-    borderColor: Colors.glass.border,
-    borderWidth: 1,
-    borderRadius: Radii.lg,
-    padding: 16,
+    padding: 22,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 16,
-    overflow: 'hidden',
   },
   glassBadgeIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
+    width: 50,
+    height: 50,
+    borderRadius: 13,
     backgroundColor: 'rgba(108, 92, 231, 0.1)',
     alignItems: 'center',
     justifyContent: 'center',
@@ -438,10 +491,11 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: Colors.text,
-    marginBottom: 2,
+    marginBottom: 3,
   },
   glassBadgeDesc: {
     fontSize: 13,
     color: Colors.textSecondary,
+    lineHeight: 18,
   }
 });
