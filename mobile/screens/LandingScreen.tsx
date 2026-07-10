@@ -49,7 +49,15 @@ export default function LandingScreen({ navigation }: Props) {
           end={{ x: 0.5, y: 1 }}
         />
 
-        {/* 3D Orb Section (Moved above text) */}
+        {/* Top Tag */}
+        <View style={styles.topTagContainer}>
+          <View style={styles.tag}>
+            <Text style={styles.tagIcon}>✦</Text>
+            <Text style={styles.tagText}>Your Conversations, Your AI</Text>
+          </View>
+        </View>
+
+        {/* 3D Orb Section */}
         <View style={styles.orbContainer}>
           {/* Concentric Platforms */}
           <View style={styles.platform1} />
@@ -105,10 +113,6 @@ export default function LandingScreen({ navigation }: Props) {
 
         {/* Hero Text */}
         <View style={styles.heroTextContainer}>
-          <View style={styles.tag}>
-            <Text style={styles.tagIcon}>✦</Text>
-            <Text style={styles.tagText}>Your Conversations, Your AI</Text>
-          </View>
 
           <Text style={styles.title}>Meet Your</Text>
           
@@ -215,6 +219,13 @@ const styles = StyleSheet.create({
     right: 0,
     height: 600,
     zIndex: -1,
+  },
+  topTagContainer: {
+    paddingHorizontal: Spacing.xl,
+    alignItems: 'center',
+    width: '100%',
+    zIndex: 10,
+    marginTop: Spacing.sm,
   },
   heroTextContainer: {
     paddingHorizontal: Spacing.xl,
