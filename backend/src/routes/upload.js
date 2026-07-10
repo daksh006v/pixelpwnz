@@ -28,9 +28,9 @@ router.post('/', upload.single('chatFile'), async (req, res, next) => {
       userName
     );
 
-    // Limit to 250 pairs to stay safely under Chroma Cloud's free tier quota limit (max 300)
-    // We slice the last 250 pairs to preserve the most recent part of the conversation
-    const pairs = parsedPairs.slice(-250);
+    // Limit to 750 pairs to safely process a larger chunk of the conversation
+    // We slice the last 750 pairs to preserve the most recent part of the conversation
+    const pairs = parsedPairs.slice(-750);
 
     const sessionId = uuidv4();
 
