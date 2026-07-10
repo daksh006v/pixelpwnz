@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    paddingTop: 0,
+    paddingTop: Spacing.xl,
     paddingBottom: Spacing['5xl'],
     alignItems: 'center',
   },
