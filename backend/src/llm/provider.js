@@ -3,35 +3,59 @@ import config from '../config.js';
 // OpenAI implementation removed
 
 async function generateOllama(systemPrompt, userPrompt, temperature) {
-  const response = await fetch(`${config.ollama.baseUrl}/api/generate`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: config.ollama.model,
-      system: systemPrompt,
-      prompt: userPrompt,
-      temperature,
-      stream: false,
-    }),
-    signal: AbortSignal.timeout(10000),
-  });
+  try {
+    const response = await fetch(`${config.ollama.baseUrl}/api/generate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: config.ollama.model,
+        system: systemPrompt,
+        prompt: userPrompt,
+        temperature,
+        stream: false,
+      }),
+      signal: AbortSignal.timeout(10000),
+    });
 
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Ollama API error (${response.status}): ${text}`);
+    if (!response.ok) {
+      const text = await response.text();
+      if (response.status === 429) {
+        const err = new Error('Too many requests. Please wait a moment and try again.');
+        err.statusCode = 429;
+        throw err;
+      }
+      const err = new Error(`Ollama API error (${response.status}): ${text}`);
+      err.statusCode = 503;
+      throw err;
+    }
+
+    const data = await response.json();
+
+    return {
+      reply: (data.response || '').trim(),
+      provider: 'ollama',
+      usage: {
+        prompt_tokens: data.prompt_eval_count || 0,
+        completion_tokens: data.eval_count || 0,
+        total_tokens: (data.prompt_eval_count || 0) + (data.eval_count || 0),
+      },
+    };
+  } catch (err) {
+    if (err.statusCode) throw err;
+    if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+      const e = new Error('LLM request timed out. Please try again.');
+      e.statusCode = 504;
+      throw e;
+    }
+    if (err.code === 'ECONNREFUSED') {
+      const e = new Error('LLM Service unavailable. Is Ollama running?');
+      e.statusCode = 503;
+      throw e;
+    }
+    const e = new Error(`LLM error: ${err.message}`);
+    e.statusCode = 503;
+    throw e;
   }
-
-  const data = await response.json();
-
-  return {
-    reply: (data.response || '').trim(),
-    provider: 'ollama',
-    usage: {
-      prompt_tokens: data.prompt_eval_count || 0,
-      completion_tokens: data.eval_count || 0,
-      total_tokens: (data.prompt_eval_count || 0) + (data.eval_count || 0),
-    },
-  };
 }
 
 async function generateGroq(systemPrompt, userPrompt, temperature) {
@@ -77,19 +101,34 @@ async function generateGroq(systemPrompt, userPrompt, temperature) {
 }
 
 /**
- * Hybrid LLM provider — tries local Ollama first, falls back to cloud.
- * Priority: Ollama (free, local) → Groq (free, ultra-fast)
+ * Rule-based fallback reply when LLM is completely unavailable.
+ * PRD §3 Epic 3 — Fallback requirement.
+ */
+function fallbackReply() {
+  const fallbacks = [
+    "I'll get back to you soon",
+    'Hey, busy right now — will reply later!',
+    'Can we talk about this later?',
+  ];
+  return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+}
+
+/**
+ * Hybrid LLM provider — tries local Ollama first, falls back to Groq.
+ * On catastrophic failure, falls back to a rule-based reply.
+ * Priority: Ollama (free, local) → Groq (free, ultra-fast) → Fallback Text
+ * 
  * @param {string} systemPrompt
  * @param {string} userPrompt
  * @param {number} [temperature=0.7]
- * @returns {Promise<{ reply: string, provider: string, usage: object }>}
+ * @returns {Promise<{ reply: string, provider: string, usage: object, fallback: boolean }>}
  */
 export async function generateReply(systemPrompt, userPrompt, temperature = 0.7) {
   const errors = [];
 
   // 1. Try Ollama (local, free, fastest)
   try {
-    return await generateOllama(systemPrompt, userPrompt, temperature);
+    return { ...(await generateOllama(systemPrompt, userPrompt, temperature)), fallback: false };
   } catch (err) {
     errors.push(`Ollama: ${err.message}`);
   }
@@ -97,11 +136,18 @@ export async function generateReply(systemPrompt, userPrompt, temperature = 0.7)
   // 2. Try Groq (cloud, free tier, ultra-fast)
   if (config.groq?.apiKey) {
     try {
-      return await generateGroq(systemPrompt, userPrompt, temperature);
+      return { ...(await generateGroq(systemPrompt, userPrompt, temperature)), fallback: false };
     } catch (err) {
       errors.push(`Groq: ${err.message}`);
     }
   }
 
-  throw new Error(`All LLM providers failed:\n${errors.join('\n')}`);
+  // 3. Complete failure - use Rule-based Fallback
+  console.error('[LLM] All providers failed, using rule-based fallback.\nErrors:', errors.join('\n'));
+  return {
+    reply: fallbackReply(),
+    provider: 'fallback',
+    usage: { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
+    fallback: true,
+  };
 }
