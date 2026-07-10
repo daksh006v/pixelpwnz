@@ -2,6 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { MessageSquare, Lock, Zap, Sparkles, EyeOff, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '../store/authStore';
+import toast from 'react-hot-toast';
 
 export default function LoginPage() {
   const [isLogin, setIsLogin] = useState(true);
@@ -20,10 +21,28 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    let success = false;
+    
     if (isLogin) {
-      await login(email, password);
+      success = await login(email, password);
     } else {
-      await register(email, password, name);
+      success = await register(email, password, name);
+    }
+    
+    if (!success) {
+      const currentError = useAuthStore.getState().error;
+      let friendlyError = currentError || 'Something went wrong. Please try again.';
+      
+      // Make generic errors more Apple-like and user-friendly
+      if (friendlyError.toLowerCase() === 'login failed') {
+        friendlyError = 'Incorrect email or password. Please try again.';
+      } else if (friendlyError.toLowerCase() === 'registration failed') {
+        friendlyError = 'Unable to create account. Please check your details and try again.';
+      }
+      
+      toast.error(friendlyError);
+    } else {
+      toast.success(isLogin ? 'Welcome back!' : 'Account created successfully!');
     }
   };
 
@@ -196,11 +215,6 @@ export default function LoginPage() {
             </div>
 
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {error && (
-                <div style={{ color: '#ef4444', fontSize: '0.85rem', background: '#fef2f2', padding: '10px 12px', borderRadius: 8, border: '1px solid #fecaca', marginBottom: 4 }}>
-                  {error}
-                </div>
-              )}
               
               {!isLogin && (
                 <div>
