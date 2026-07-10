@@ -24,7 +24,6 @@ import app from '../src/index.js';
 import { createSession, getSession, clearAll, stopCleanup } from '../src/store/sessionStore.js';
 import { buildRAGPrompt } from '../src/brain/index.js';
 import { generateReply } from '../src/llm/provider.js';
-
 describe('POST /api/chat', () => {
   beforeEach(() => {
     clearAll();
