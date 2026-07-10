@@ -59,7 +59,7 @@ export default function LoginPage() {
         position: 'relative',
         width: '100%',
         maxWidth: 900,
-        height: isLogin ? 660 : 740,
+        height: 680,
         background: '#f9fafb',
         borderRadius: 24,
         border: '1px solid rgba(0,0,0,0.08)',
@@ -154,7 +154,7 @@ export default function LoginPage() {
           <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             
 
-            <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <div style={{ textAlign: 'center', marginBottom: 20 }}>
               <h2 style={{ fontSize: '1.75rem', fontWeight: 800, color: '#111827', marginBottom: 8, letterSpacing: '-0.02em' }}>
                 {isLogin ? "Welcome back 👋" : "Create an account "}
               </h2>
@@ -163,12 +163,12 @@ export default function LoginPage() {
               </p>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
               <button 
                 onClick={(e) => { e.preventDefault(); console.log('Social login clicked'); }}
                 style={{
 
-                width: '100%', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                width: '100%', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
                 background: 'white', border: '1px solid #E5E7EB', borderRadius: 8, cursor: 'pointer',
                 fontSize: '0.9rem', fontWeight: 600, color: '#374151', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
               }}>
@@ -180,7 +180,7 @@ export default function LoginPage() {
                 onClick={handleSubmit}
                 style={{
 
-                width: '100%', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+                width: '100%', padding: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
                 background: 'white', border: '1px solid #E5E7EB', borderRadius: 8, cursor: 'pointer',
                 fontSize: '0.9rem', fontWeight: 600, color: '#374151', transition: 'all 0.2s', boxShadow: '0 1px 2px rgba(0,0,0,0.02)'
               }}>
@@ -195,7 +195,7 @@ export default function LoginPage() {
               <div style={{ flex: 1, height: 1, background: '#F3F4F6' }} />
             </div>
 
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {error && (
                 <div style={{ color: '#ef4444', fontSize: '0.85rem', background: '#fef2f2', padding: '10px 12px', borderRadius: 8, border: '1px solid #fecaca', marginBottom: 4 }}>
                   {error}
@@ -265,12 +265,12 @@ export default function LoginPage() {
                 </div>
               )}
 
-              <button disabled={isLoading} type="submit" className="btn btn-primary" style={{ width: '100%', padding: '12px', borderRadius: 8, fontSize: '0.95rem', marginTop: 8, display: 'flex', justifyContent: 'center', gap: 8, boxShadow: '0 4px 12px rgba(108, 92, 231, 0.2)', opacity: isLoading ? 0.7 : 1 }}>
+              <button disabled={isLoading} type="submit" className="btn btn-primary" style={{ width: '100%', padding: '10px', borderRadius: 8, fontSize: '0.95rem', marginTop: 8, display: 'flex', justifyContent: 'center', gap: 8, boxShadow: '0 4px 12px rgba(108, 92, 231, 0.2)', opacity: isLoading ? 0.7 : 1 }}>
                 {isLoading ? 'Processing...' : (isLogin ? 'Log in' : 'Sign up')} {!isLoading && <ArrowRight size={16} />}
               </button>
             </form>
 
-            <p style={{ textAlign: 'center', fontSize: '0.85rem', color: '#4B5563', marginTop: 16, marginBottom: 24 }}>
+            <p style={{ textAlign: 'center', fontSize: '0.85rem', color: '#4B5563', marginTop: 12, marginBottom: 16 }}>
               {isLogin ? "Don't have an account? " : "Already have an account? "}
               <button 
                 onClick={() => setIsLogin(!isLogin)}
