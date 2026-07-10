@@ -165,7 +165,7 @@ export default function LoginPage() {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 16 }}>
               <button 
-                onClick={handleLogin}
+                onClick={(e) => { e.preventDefault(); console.log('Social login clicked'); }}
                 style={{
 
                 width: '100%', padding: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
