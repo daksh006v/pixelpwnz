@@ -25,7 +25,7 @@ router.post('/', async (req, res, next) => {
       throw err;
     }
 
-    const session = getSession(session_id);
+    const session = await getSession(session_id);
     if (!session) {
       const err = new Error('Session not found or expired');
       err.statusCode = 404;

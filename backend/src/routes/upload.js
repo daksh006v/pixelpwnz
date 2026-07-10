@@ -38,7 +38,7 @@ router.post('/', upload.single('chatFile'), async (req, res, next) => {
 
     await ingestPairs(sessionId, pairs);
 
-    createSession(sessionId, {
+    await createSession(sessionId, {
       contact_name: contactName,
       pairs,
       toneProfile,

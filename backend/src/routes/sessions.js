@@ -12,11 +12,11 @@ const router = Router();
  * Query params:
  *   - search: string (optional) — filter sessions by contact_name (case-insensitive)
  */
-router.get('/', (req, res, next) => {
+router.get('/', async (req, res, next) => {
   try {
     const { search } = req.query;
 
-    let sessions = listSessions();
+    let sessions = await listSessions();
 
     if (search && typeof search === 'string' && search.trim()) {
       const q = search.trim().toLowerCase();
@@ -44,7 +44,7 @@ router.get('/', (req, res, next) => {
 router.get('/:sessionId', async (req, res, next) => {
   try {
     const { sessionId } = req.params;
-    const session = getSession(sessionId);
+    const session = await getSession(sessionId);
 
     if (!session) {
       return res.status(404).json({
@@ -94,7 +94,7 @@ router.get('/:sessionId', async (req, res, next) => {
  *   - label: string (optional) — a user-defined label for the session
  *   - temperature: number (optional) — LLM temperature override (0.0 - 2.0)
  */
-router.patch('/:sessionId', (req, res, next) => {
+router.patch('/:sessionId', async (req, res, next) => {
   try {
     const { sessionId } = req.params;
     const { label, temperature } = req.body;
@@ -127,7 +127,7 @@ router.patch('/:sessionId', (req, res, next) => {
       }
     }
 
-    const updated = updateSession(sessionId, { label, temperature });
+    const updated = await updateSession(sessionId, { label, temperature });
 
     if (!updated) {
       return res.status(404).json({
@@ -162,10 +162,10 @@ router.patch('/:sessionId', (req, res, next) => {
  *   - limit: integer (default: 20, max: 100)
  *   - sort: 'asc' | 'desc' (default: 'desc' — newest first)
  */
-router.get('/:sessionId/pairs', (req, res, next) => {
+router.get('/:sessionId/pairs', async (req, res, next) => {
   try {
     const { sessionId } = req.params;
-    const session = getSession(sessionId);
+    const session = await getSession(sessionId);
 
     if (!session) {
       return res.status(404).json({
