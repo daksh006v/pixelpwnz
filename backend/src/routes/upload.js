@@ -5,10 +5,11 @@ import { parseWhatsAppChat } from '../parser/index.js';
 import { ingestPairs } from '../brain/index.js';
 import { buildToneProfile } from '../brain/promptBuilder.js';
 import { createSession } from '../store/sessionStore.js';
+import { optionalAuth } from '../middleware/auth.js';
 
 const router = Router();
 
-router.post('/', upload.single('chatFile'), async (req, res, next) => {
+router.post('/', upload.single('chatFile'), optionalAuth, async (req, res, next) => {
   try {
     if (!req.file) {
       const err = new Error('No file uploaded');
@@ -29,23 +30,24 @@ router.post('/', upload.single('chatFile'), async (req, res, next) => {
     );
 
     const sessionId = uuidv4();
-
     const toneProfile = buildToneProfile(pairs);
 
     await ingestPairs(sessionId, pairs);
 
-    createSession(sessionId, {
+    await createSession(sessionId, {
       contact_name: contactName,
       pairs,
       toneProfile,
       userName,
-    });
+    }, req.user?.id || null);
 
     res.status(200).json({
       success: true,
       session_id: sessionId,
+      user_name: userName,
       contact_name: contactName,
       total_pairs_extracted: pairs.length,
+      pair_count: pairs.length,
       total_messages_parsed: totalMessagesParsed,
       estimated_generation_time_ms: Math.round(pairs.length * 3.5),
     });

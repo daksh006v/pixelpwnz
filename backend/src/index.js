@@ -10,8 +10,13 @@ import uploadRoutes from './routes/upload.js';
 import chatRoutes from './routes/chat.js';
 import statsRoutes from './routes/stats.js';
 import sessionRoutes from './routes/session.js';
+import personaRoutes from './routes/persona.js';
+import sessionsRoutes from './routes/sessions.js';
+import configRoutes from './routes/config.js';
+import authRoutes from './routes/auth.js';
 import { startCleanup } from './store/sessionStore.js';
 import { cleanupOrphanedCollections } from './brain/chromaClient.js';
+import { connectDB } from './db.js';
 
 const app = express();
 
@@ -30,10 +35,17 @@ const chatLimiter = rateLimit({
   message: { success: false, error: 'Too many requests. Try again shortly.' },
 });
 
+// Auth routes (no rate limit)
+app.use('/api/auth', authRoutes);
+
+// API routes
 app.use('/api/upload', uploadRoutes);
 app.use('/api/chat', chatLimiter, chatRoutes);
 app.use('/api/stats', statsRoutes);
 app.use('/api/session', sessionRoutes);
+app.use('/api/persona', personaRoutes);
+app.use('/api/sessions', sessionsRoutes);
+app.use('/api/config', configRoutes);
 
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
@@ -52,6 +64,7 @@ const isMainModule = process.argv[1] && (
 if (isMainModule) {
   const server = app.listen(config.port, async () => {
     console.log(`[Signet] Server running on port ${config.port}`);
+    await connectDB().catch((err) => console.warn('[MongoDB] Connection warning:', err.message));
     await cleanupOrphanedCollections();
   });
 
