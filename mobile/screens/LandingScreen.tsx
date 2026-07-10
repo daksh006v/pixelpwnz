@@ -57,61 +57,7 @@ export default function LandingScreen({ navigation }: Props) {
           </View>
         </View>
 
-        {/* 3D Orb Section */}
-        <View style={styles.orbContainer}>
-          {/* Concentric Platforms */}
-          <View style={styles.platform1} />
-          <View style={styles.platform2} />
-          <View style={styles.platform3} />
-
-          {/* Animated Orb */}
-          <Animated.View style={[styles.orbWrapper, { transform: [{ translateY }] }]}>
-            <LinearGradient
-              colors={['#C5B8FF', '#7560F0', '#2E1A9E']}
-              start={{ x: 0.2, y: 0.1 }}
-              end={{ x: 0.9, y: 0.9 }}
-              style={styles.orb}
-            >
-              {/* Specular Highlight */}
-              <LinearGradient
-                colors={['rgba(255, 255, 255, 0.7)', 'transparent']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.orbHighlight}
-              />
-              {/* Eyes */}
-              <View style={styles.orbEyes}>
-                <View style={styles.orbEye} />
-                <View style={styles.orbEye} />
-              </View>
-            </LinearGradient>
-          </Animated.View>
-
-          {/* Glass Cards (Positioned around Orb) */}
-          <View style={[styles.glassCardWrapper, { top: 20, left: 10 }]}>
-            <BlurView intensity={40} tint="light" style={styles.glassCard}>
-              <View style={styles.glassCardBg} />
-              <View style={styles.glassCardIcon}><Feather name="message-circle" size={16} color={Colors.primarySolid} /></View>
-              <View>
-                <Text style={styles.glassCardTitle}>Your Chat</Text>
-                <Text style={styles.glassCardDesc}>Upload your{'\n'}conversations</Text>
-              </View>
-            </BlurView>
-          </View>
-
-          <View style={[styles.glassCardWrapper, { bottom: 60, right: 10 }]}>
-            <BlurView intensity={40} tint="light" style={styles.glassCard}>
-              <View style={styles.glassCardBg} />
-              <View style={styles.glassCardIcon}><Feather name="cpu" size={16} color={Colors.primarySolid} /></View>
-              <View>
-                <Text style={styles.glassCardTitle}>Smart AI</Text>
-                <Text style={styles.glassCardDesc}>Analyzes tone,{'\n'}pattern & style</Text>
-              </View>
-            </BlurView>
-          </View>
-        </View>
-
-        {/* Hero Text */}
+        {/* Hero Text & Content */}
         <View style={styles.heroTextContainer}>
 
           <Text style={styles.title}>Meet Your</Text>
@@ -131,6 +77,60 @@ export default function LandingScreen({ navigation }: Props) {
           <Text style={styles.subtitle}>
             Signet creates a personalized AI clone from your chat history — built to reflect the way they truly talk.
           </Text>
+
+          {/* 3D Orb Section (Moved below title/subtitle) */}
+          <View style={styles.orbContainer}>
+            {/* Concentric Platforms */}
+            <View style={styles.platform1} />
+            <View style={styles.platform2} />
+            <View style={styles.platform3} />
+
+            {/* Animated Orb */}
+            <Animated.View style={[styles.orbWrapper, { transform: [{ translateY }] }]}>
+              <LinearGradient
+                colors={['#C5B8FF', '#7560F0', '#2E1A9E']}
+                start={{ x: 0.2, y: 0.1 }}
+                end={{ x: 0.9, y: 0.9 }}
+                style={styles.orb}
+              >
+                {/* Specular Highlight */}
+                <LinearGradient
+                  colors={['rgba(255, 255, 255, 0.7)', 'transparent']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.orbHighlight}
+                />
+                {/* Eyes */}
+                <View style={styles.orbEyes}>
+                  <View style={styles.orbEye} />
+                  <View style={styles.orbEye} />
+                </View>
+              </LinearGradient>
+            </Animated.View>
+
+            {/* Glass Cards (Positioned around Orb) */}
+            <View style={[styles.glassCardWrapper, { top: 20, left: 10 }]}>
+              <BlurView intensity={40} tint="light" style={styles.glassCard}>
+                <View style={styles.glassCardBg} />
+                <View style={styles.glassCardIcon}><Feather name="message-circle" size={16} color={Colors.primarySolid} /></View>
+                <View>
+                  <Text style={styles.glassCardTitle}>Your Chat</Text>
+                  <Text style={styles.glassCardDesc}>Upload your{'\n'}conversations</Text>
+                </View>
+              </BlurView>
+            </View>
+
+            <View style={[styles.glassCardWrapper, { bottom: 60, right: 10 }]}>
+              <BlurView intensity={40} tint="light" style={styles.glassCard}>
+                <View style={styles.glassCardBg} />
+                <View style={styles.glassCardIcon}><Feather name="cpu" size={16} color={Colors.primarySolid} /></View>
+                <View>
+                  <Text style={styles.glassCardTitle}>Smart AI</Text>
+                  <Text style={styles.glassCardDesc}>Analyzes tone,{'\n'}pattern & style</Text>
+                </View>
+              </BlurView>
+            </View>
+          </View>
 
           {/* CTA Buttons */}
           <View style={styles.ctaRow}>
