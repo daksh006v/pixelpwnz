@@ -74,11 +74,7 @@ export default function LandingScreen({ navigation }: Props) {
             />
           </MaskedView>
 
-          <Text style={styles.subtitle}>
-            Signet creates a personalized AI clone from your chat history — built to reflect the way they truly talk.
-          </Text>
-
-          {/* 3D Orb Section (Moved below title/subtitle) */}
+          {/* 3D Orb Section */}
           <View style={styles.orbContainer}>
             {/* Concentric Platforms */}
             <View style={styles.platform1} />
@@ -131,6 +127,10 @@ export default function LandingScreen({ navigation }: Props) {
               </BlurView>
             </View>
           </View>
+
+          <Text style={styles.subtitle}>
+            Signet creates a personalized AI clone from your chat history — built to reflect the way they truly talk.
+          </Text>
 
           {/* CTA Buttons */}
           <View style={styles.ctaRow}>
