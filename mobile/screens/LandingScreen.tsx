@@ -64,7 +64,7 @@ export default function LandingScreen({ navigation }: Props) {
           
           <MaskedView
             style={{ height: 60, width: '100%', alignItems: 'center' }}
-            maskElement={<Text style={styles.titleMask}>AI Clone</Text>}
+            maskElement={<Text style={styles.titleMask}>AI Persona</Text>}
           >
             <LinearGradient
               colors={['#5F5AFF', '#9155FF']}
@@ -129,7 +129,7 @@ export default function LandingScreen({ navigation }: Props) {
           </View>
 
           <Text style={styles.subtitle}>
-            Signet creates a personalized AI clone from your chat history — built to reflect the way they truly talk.
+            Signet creates a personalized AI clone from your chat history, built to reflect the way they truly talk.
           </Text>
 
           {/* CTA Buttons */}
