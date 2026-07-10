@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import mongoose from 'mongoose';
 
 import config from './config.js';
 import errorHandler from './middleware/errorHandler.js';
@@ -58,6 +59,12 @@ const isMainModule = process.argv[1] && (
 if (isMainModule) {
   const server = app.listen(config.port, async () => {
     console.log(`[Signet] Server running on port ${config.port}`);
+    try {
+      await mongoose.connect(config.mongoUri);
+      console.log('[Signet] Connected to MongoDB');
+    } catch (err) {
+      console.error('[Signet] MongoDB connection error:', err);
+    }
     await cleanupOrphanedCollections();
   });
 

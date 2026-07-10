@@ -3,10 +3,10 @@ import { getSession } from '../store/sessionStore.js';
 
 const router = Router();
 
-router.get('/:sessionId', (req, res, next) => {
+router.get('/:sessionId', async (req, res, next) => {
   try {
     const { sessionId } = req.params;
-    const session = getSession(sessionId);
+    const session = await getSession(sessionId);
 
     if (!session) {
       return res.status(200).json({ session_exists: false });
