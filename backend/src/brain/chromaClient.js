@@ -1,8 +1,17 @@
-import { ChromaClient } from 'chromadb';
+import { ChromaClient, CloudClient } from 'chromadb';
 
-const chroma = new ChromaClient({
-  path: `http://${process.env.CHROMA_HOST || 'localhost'}:${process.env.CHROMA_PORT || 8000}`,
-});
+const isCloud = !!process.env.CHROMA_CLOUD_API_KEY;
+
+
+const chroma = isCloud 
+  ? new CloudClient({
+      apiKey: process.env.CHROMA_CLOUD_API_KEY,
+      tenant: process.env.CHROMA_TENANT,
+      database: process.env.CHROMA_DATABASE,
+    })
+  : new ChromaClient({
+      path: `http://${process.env.CHROMA_HOST || 'localhost'}:${process.env.CHROMA_PORT || 8000}`,
+    });
 
 /**
  * Get-or-create a ChromaDB collection for a session.

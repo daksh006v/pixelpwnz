@@ -23,10 +23,14 @@ router.post('/', upload.single('chatFile'), async (req, res, next) => {
       throw err;
     }
 
-    const { contactName, pairs, totalMessagesParsed } = parseWhatsAppChat(
+    const { contactName, pairs: parsedPairs, totalMessagesParsed } = parseWhatsAppChat(
       req.file.buffer,
       userName
     );
+
+    // Limit to 250 pairs to stay safely under Chroma Cloud's free tier quota limit (max 300)
+    // We slice the last 250 pairs to preserve the most recent part of the conversation
+    const pairs = parsedPairs.slice(-250);
 
     const sessionId = uuidv4();
 
