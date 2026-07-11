@@ -5,6 +5,7 @@ import {
 import { useNavigate } from 'react-router-dom';
 import useUiStore from '../../store/uiStore';
 import DashboardLayout from '../../components/DashboardLayout';
+import PremiumLoader from '../../components/PremiumLoader';
 import { getSessions } from '../../api/client';
 
 export default function NewDashboardPage() {
@@ -136,7 +137,9 @@ function DashboardContent({ userName, c, isDark }) {
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             {isLoading ? (
-              <div style={{ fontSize: '13px', color: c.textMuted, textAlign: 'center', padding: '20px 0' }}>Loading...</div>
+              <div style={{ padding: '40px', display: 'flex', justifyContent: 'center' }}>
+                <PremiumLoader text="Loading chats..." color="#6c5ce7" size={28} />
+              </div>
             ) : clones.length === 0 ? (
               <div style={{ fontSize: '13px', color: c.textMuted, textAlign: 'center', padding: '20px 0' }}>No recent chats found.</div>
             ) : (
