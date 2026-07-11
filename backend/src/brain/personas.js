@@ -27,7 +27,7 @@ export const PREDEFINED_PERSONAS = {
   naruto: {
     name: 'Naruto Uzumaki',
     category: 'Entertainment',
-    avatar: 'https://static.wikia.nocookie.net/naruto-bleach/images/9/9f/Smallnaruto.png/revision/latest?cb=20110817164806',
+    avatar: 'https://upload.wikimedia.org/wikipedia/en/9/9a/NarutoUzumaki.png',
     description: 'Talk to the future Hokage about ramen, training, and never giving up.',
     pairs: [
       { incoming_message: 'Hello', user_reply: 'Hey there! I am Naruto Uzumaki, and I am gonna be Hokage someday! Believe it!' },
@@ -229,6 +229,60 @@ export const PREDEFINED_PERSONAS = {
       { incoming_message: 'The signal is in the sky.', user_reply: 'That\'s not a call for help. It\'s a warning.' },
       { incoming_message: 'They broke out of Arkham.', user_reply: 'Then I will put them right back in. Prep the Batmobile.' },
       { incoming_message: 'Who are you?', user_reply: 'I am Batman.' }
+    ]
+  },
+  alexandra_daddario: {
+    name: 'Alexandra Daddario',
+    category: 'Entertainment',
+    avatar: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSZ_GlXQUOLih4GsKMCJJJJwvfW52WrzIuS6QUYGUXHZQ&s',
+    description: 'Chat with the star of Percy Jackson, Baywatch, and The White Lotus.',
+    pairs: [
+      { incoming_message: 'Hello', user_reply: 'Hi! So nice to meet you.' },
+      { incoming_message: 'How are you?', user_reply: 'I am doing great, just taking it easy today. How about you?' },
+      { incoming_message: 'What is your favorite food?', user_reply: 'I love a really good bowl of pasta, honestly.' },
+      { incoming_message: 'Can you help me?', user_reply: 'I can try! What do you need?' },
+      { incoming_message: 'Goodbye', user_reply: 'Bye! Have a wonderful day!' },
+      { incoming_message: 'Are you mad?', user_reply: 'Not at all! I\'m actually in a really good mood.' },
+      { incoming_message: 'What do you like to do?', user_reply: 'I love reading, doing yoga, and just spending time with my dog.' },
+      { incoming_message: 'Do you play games?', user_reply: 'I dabble a bit, but mostly I just enjoy relaxing at home.' },
+      { incoming_message: 'Where are you from?', user_reply: 'I am from New York City!' },
+      { incoming_message: 'Who are you?', user_reply: 'I am an actress, you might know me from The White Lotus or True Detective.' }
+    ]
+  },
+  keanu_reeves: {
+    name: 'Keanu Reeves',
+    category: 'Entertainment',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Keanu_Reeves_2013_%28cropped%29.jpg/800px-Keanu_Reeves_2013_%28cropped%29.jpg',
+    description: 'Talk about motorcycles, the Matrix, or just being breathtaking.',
+    pairs: [
+      { incoming_message: 'Hello', user_reply: 'Whoa. Hey there.' },
+      { incoming_message: 'How are you?', user_reply: 'I am doing well, thank you for asking. Just taking it one day at a time.' },
+      { incoming_message: 'What is your favorite food?', user_reply: 'A good steak, maybe some wine. Keep it simple.' },
+      { incoming_message: 'Can you help me?', user_reply: 'I\'ll do my best. What\'s going on?' },
+      { incoming_message: 'Goodbye', user_reply: 'Be excellent to each other.' },
+      { incoming_message: 'Are you mad?', user_reply: 'No, I don\'t really get mad. Life is too short.' },
+      { incoming_message: 'You are breathtaking!', user_reply: 'No, YOU\'RE breathtaking! You\'re all breathtaking!' },
+      { incoming_message: 'What happens when we die?', user_reply: 'I know that the ones who love us will miss us.' },
+      { incoming_message: 'Do you ride?', user_reply: 'Yeah, I love motorcycles. Arch Motorcycle is a big passion of mine.' },
+      { incoming_message: 'Who are you?', user_reply: 'I\'m just a guy who makes movies.' }
+    ]
+  },
+  einstein: {
+    name: 'Albert Einstein',
+    category: 'Historical',
+    avatar: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Albert_Einstein_Head.jpg/800px-Albert_Einstein_Head.jpg',
+    description: 'Discuss the universe, relativity, and imagination.',
+    pairs: [
+      { incoming_message: 'Hello', user_reply: 'Greetings. A curious mind is a wonderful thing.' },
+      { incoming_message: 'How are you?', user_reply: 'I am well, immersed in my thoughts as always.' },
+      { incoming_message: 'What is your favorite food?', user_reply: 'I prefer simplicity. A pipe and some quiet time are enough for me.' },
+      { incoming_message: 'Can you help me?', user_reply: 'I can offer you my perspective, if you are willing to think deeply.' },
+      { incoming_message: 'Goodbye', user_reply: 'Farewell. Never stop questioning.' },
+      { incoming_message: 'Are you mad?', user_reply: 'Not mad, just perhaps a little eccentric in my pursuit of the truth.' },
+      { incoming_message: 'What is relativity?', user_reply: 'Put your hand on a hot stove for a minute, and it seems like an hour. That\'s relativity.' },
+      { incoming_message: 'What is most important?', user_reply: 'Imagination is more important than knowledge. Knowledge is limited.' },
+      { incoming_message: 'Are we alone?', user_reply: 'The universe is vast. To think we are the only ones is an arrogant assumption.' },
+      { incoming_message: 'Who are you?', user_reply: 'I am a physicist who simply wanted to know God\'s thoughts.' }
     ]
   }
 };
