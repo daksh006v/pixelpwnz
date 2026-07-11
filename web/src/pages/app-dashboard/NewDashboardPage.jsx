@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  MessageSquare, Upload, Database, Activity, ChevronRight, CheckCircle, Zap
+  MessageSquare, Upload, Database, Activity, ChevronRight, CheckCircle, Zap, Trash2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import useUiStore from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
 import DashboardLayout from '../../components/DashboardLayout';
 import PremiumLoader from '../../components/PremiumLoader';
-import { getSessions } from '../../api/client';
+import { getSessions, clearSession } from '../../api/client';
 
 export default function NewDashboardPage() {
   const { user: uiUser } = useUiStore();
@@ -28,6 +29,27 @@ function DashboardContent({ userName, c, isDark }) {
   const [clones, setClones] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showAll, setShowAll] = useState(false);
+  const [activeDropdown, setActiveDropdown] = useState(null);
+
+  useEffect(() => {
+    const handleClickOutside = () => setActiveDropdown(null);
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, []);
+
+  const handleDelete = async (e, sessionId) => {
+    e.stopPropagation();
+    setActiveDropdown(null);
+    if (!window.confirm('Are you sure you want to delete this AI Clone and its memory?')) return;
+    
+    try {
+      await clearSession(sessionId);
+      setClones(prev => prev.filter(c => c.session_id !== sessionId));
+      toast.success('Clone deleted successfully');
+    } catch (err) {
+      toast.error('Failed to delete clone');
+    }
+  };
 
   useEffect(() => {
     async function loadSessions() {
@@ -182,9 +204,42 @@ function DashboardContent({ userName, c, isDark }) {
                       <div style={{ fontSize: '11px', color: c.textLight }}>{new Date(chat.created_at).toLocaleDateString()}</div>
                     </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div 
+                    style={{ display: 'flex', alignItems: 'center', gap: '16px', position: 'relative' }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <span style={{ fontSize: '12px', color: c.textMuted, fontWeight: 500 }}>{chat.pair_count} Pairs</span>
-                    <span style={{ color: '#c7bee6', letterSpacing: '2px' }}>•••</span>
+                    <span 
+                      style={{ color: '#c7bee6', letterSpacing: '2px', padding: '0 8px', cursor: 'pointer' }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveDropdown(activeDropdown === chat.session_id ? null : chat.session_id);
+                      }}
+                    >
+                      •••
+                    </span>
+                    
+                    {activeDropdown === chat.session_id && (
+                      <div style={{
+                        position: 'absolute', top: '100%', right: 0, marginTop: '8px',
+                        background: c.cardBgSolid, border: `1px solid ${c.borderSubtle}`,
+                        borderRadius: '12px', padding: '4px', zIndex: 100,
+                        boxShadow: `0 4px 20px ${c.shadowOuter}`, minWidth: '140px'
+                      }}>
+                        <div 
+                          onClick={(e) => handleDelete(e, chat.session_id)}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '8px', padding: '10px 12px',
+                            color: '#ff4757', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
+                            borderRadius: '8px', transition: 'background 0.2s'
+                          }}
+                          onMouseEnter={(e) => e.currentTarget.style.background = isDark ? 'rgba(255, 71, 87, 0.1)' : '#ffeaea'}
+                          onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                        >
+                          <Trash2 size={14} /> Delete Clone
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))
